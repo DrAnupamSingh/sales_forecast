@@ -20,7 +20,8 @@ section = st.sidebar.radio("Go to:", ["📈 Regression", "📅 Forecasting", "�
 # ================================
 if section == "📈 Regression":
     st.header("🔮 Predictive Modeling: Category Sales Prediction")
-    required_cols = ['category_sales_value', 'basket_spend', 'product_unit', 'category_level1']
+   # Regression section (with product_unit removed)
+required_cols = ['category_sales_value', 'basket_spend', 'category_level1']
 missing_cols = [col for col in required_cols if col not in df.columns]
 
 if missing_cols:
@@ -28,7 +29,6 @@ if missing_cols:
     st.stop()
 else:
     df_model = df.dropna(subset=required_cols)
-
     df_model = pd.get_dummies(df_model, columns=['category_level1'], drop_first=True)
 
     X = df_model.drop(columns=['category_sales_value'])
@@ -51,6 +51,7 @@ else:
     coeffs = pd.Series(model.coef_, index=X.columns).sort_values()
     fig2 = px.bar(coeffs, title="Feature Importance")
     st.plotly_chart(fig2)
+
 
 # ================================
 # 📅 TIME SERIES FORECASTING MODULE
