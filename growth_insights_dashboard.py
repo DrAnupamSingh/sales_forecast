@@ -15,6 +15,51 @@ df = pd.read_excel("DATASET FOR ANUPAM.xlsx")
 st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["📈 Regression", "📅 Forecasting", "🧪 Causal Inference", "🔗 Basket Recommendations"])
 
+if section == "📈 Regression":
+    st.header("🔮 Predictive Modeling: Category Sales Prediction")
+
+    df_model = df.dropna(subset=['category_sales_value'])
+    
+    # One-hot encode categorical columns
+    cat_cols = df_model.select_dtypes(include=['object', 'category']).columns.tolist()
+    df_model = pd.get_dummies(df_model, columns=cat_cols, drop_first=True)
+    
+    # Separate features and target
+    X = df_model.drop(columns=['category_sales_value'])
+    y = df_model['category_sales_value']
+
+    # Ensure all inputs are numeric and aligned
+    X = X.apply(pd.to_numeric, errors='coerce')
+    y = pd.to_numeric(y, errors='coerce')
+    df_clean = pd.concat([X, y], axis=1).dropna()
+    X = df_clean.drop(columns=['category_sales_value'])
+    y = df_clean['category_sales_value']
+
+    # Train/Test Split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Train Model
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+
+    r2 = r2_score(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+
+    # Plot predictions
+    fig = px.scatter(x=y_test, y=y_pred, labels={'x': "Actual", 'y': "Predicted"}, title="Actual vs Predicted Sales")
+    st.plotly_chart(fig)
+
+    st.markdown("✅ **Client Insight:**")
+    st.markdown(f"- R² Score: **{r2:.2f}**")
+    st.markdown(f"- Mean Absolute Error (MAE): **£{mae:,.2f}**")
+
+    # Feature importance
+    coeffs = pd.Series(model.coef_, index=X.columns).sort_values()
+    fig2 = px.bar(coeffs, title="Feature Importance")
+    st.plotly_chart(fig2)
+
+
 
 # ================================
 # 📅 TIME SERIES FORECASTING MODULE
