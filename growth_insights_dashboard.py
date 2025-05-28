@@ -15,43 +15,6 @@ df = pd.read_excel("DATASET FOR ANUPAM.xlsx")
 st.sidebar.header("Navigation")
 section = st.sidebar.radio("Go to:", ["📈 Regression", "📅 Forecasting", "🧪 Causal Inference", "🔗 Basket Recommendations"])
 
-# ================================
-# 📈 REGRESSION MODULE
-# ================================
-if section == "📈 Regression":
-    st.header("🔮 Predictive Modeling: Category Sales Prediction")
-   # Regression section (with product_unit removed)
-required_cols = ['category_sales_value', 'basket_spend', 'category_level1']
-missing_cols = [col for col in required_cols if col not in df.columns]
-
-if missing_cols:
-    st.error(f"Missing required columns: {missing_cols}")
-    st.stop()
-else:
-    df_model = df.dropna(subset=required_cols)
-    df_model = pd.get_dummies(df_model, columns=['category_level1'], drop_first=True)
-
-    X = df_model.drop(columns=['category_sales_value'])
-    y = df_model['category_sales_value']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-
-    r2 = r2_score(y_test, y_pred)
-    mae = mean_absolute_error(y_test, y_pred)
-
-    fig = px.scatter(x=y_test, y=y_pred, labels={'x': "Actual", 'y': "Predicted"}, title="Actual vs Predicted Sales")
-    st.plotly_chart(fig)
-
-    st.markdown("✅ **Client Insight:**")
-    st.markdown(f"- R²: **{r2:.2f}**, MAE: **£{mae:,.2f}**. Indicates prediction reliability.")
-
-    coeffs = pd.Series(model.coef_, index=X.columns).sort_values()
-    fig2 = px.bar(coeffs, title="Feature Importance")
-    st.plotly_chart(fig2)
-
 
 # ================================
 # 📅 TIME SERIES FORECASTING MODULE
