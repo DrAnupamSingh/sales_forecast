@@ -20,7 +20,15 @@ section = st.sidebar.radio("Go to:", ["📈 Regression", "📅 Forecasting", "�
 # ================================
 if section == "📈 Regression":
     st.header("🔮 Predictive Modeling: Category Sales Prediction")
-    df_model = df.dropna(subset=['category_sales_value', 'basket_spend', 'product_unit', 'category_level1'])
+    required_cols = ['category_sales_value', 'basket_spend', 'product_unit', 'category_level1']
+missing_cols = [col for col in required_cols if col not in df.columns]
+
+if missing_cols:
+    st.error(f"Missing required columns: {missing_cols}")
+    st.stop()
+else:
+    df_model = df.dropna(subset=required_cols)
+
     df_model = pd.get_dummies(df_model, columns=['category_level1'], drop_first=True)
 
     X = df_model.drop(columns=['category_sales_value'])
