@@ -104,30 +104,6 @@ if section == "📅 Forecasting":
     else:
         st.error("Missing 'year_of_date' and/or 'month_of_year' columns.")
 
-# ================================
-# 🧪 CAUSAL INFERENCE MODULE
-# ================================
-if section == "🧪 Causal Inference":
-    st.header("🧪 Causal Inference: Symbol Effectiveness")
-
-    if 'symbol_indicator' in df.columns:
-        df_causal = df[['category_sales_value', 'symbol_indicator']].dropna()
-        df_causal['symbol_indicator'] = df_causal['symbol_indicator'].astype(int)
-
-        treated = df_causal[df_causal['symbol_indicator'] == 1]
-        control = df_causal[df_causal['symbol_indicator'] == 0]
-
-        uplift = treated['category_sales_value'].mean() - control['category_sales_value'].mean()
-
-        st.metric("With Symbol", f"£{treated['category_sales_value'].mean():,.2f}")
-        st.metric("Without Symbol", f"£{control['category_sales_value'].mean():,.2f}")
-        st.metric("Estimated Uplift", f"£{uplift:,.2f}")
-
-        st.markdown("✅ **Client Insight:**")
-        st.markdown("- Symbols are associated with higher category sales.")
-        st.markdown("- Expand symbol usage on underperforming categories.")
-    else:
-        st.warning("Missing 'symbol_indicator' column.")
 
 # ================================
 # 🔗 BASKET-BASED RECOMMENDATIONS
